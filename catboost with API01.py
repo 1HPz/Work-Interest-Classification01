@@ -89,30 +89,32 @@ import joblib
 # บันทึกโมเดลลงไฟล์
 joblib.dump(model, 'work_interest_classification.pkl')
 
-pip install streamlit
+
 
 import streamlit as st
 import joblib
 import pandas as pd
 
 # โหลดโมเดล
-model = joblib.load('/content/work_interest_classification.pkl')
+model = joblib.load('work_interest_classification.pkl')
 
 # สร้าง UI ให้ผู้ใช้กรอกข้อมูล
 st.title('Work Interest Classification')
+
+# รับข้อมูลจากผู้ใช้
 occupation = st.selectbox('Occupation', ['Housewife', 'Business', 'Corporate', 'Student', 'Other'])
-treatment = st.selectbox('Treatment', ['Has treated', 'Has treated'])
-growing_stress = st.selectbox('Growing Stress',['Has increased', 'Has not increased'])
+treatment = st.selectbox('Treatment', ['Has treated', 'Has not treated'])
+growing_stress = st.selectbox('Growing Stress', ['Has increased', 'Has not increased'])
 mental_health_history = st.selectbox('Mental Health History', ['Has a mental history', 'No mental history'])
 social_weakness = st.selectbox('Social Weakness', ['Not lack confidence', 'Lack confidence'])
 gender = st.selectbox('Gender', ['Male', 'Female'])
 
-# แก้ไขส่วนของ st.slider ให้ถูกต้อง
-days_indoors_options = ['1-14 days', '15-30 days', '31-60 days', 'More than 2 months', 'Go out every days']
-days_indoors_index = st.slider('Days Indoors', 0, len(days_indoors_options) - 1, 0)  # ใช้ index แทนค่า string
-days_indoors = days_indoors_options[days_indoors_index] # ดึงค่า string จาก index ที่เลือก
+# การรับค่าจาก slider สำหรับ "Days Indoors"
+days_indoors_options = ['1-14 days', '15-30 days', '31-60 days', 'More than 2 months', 'Go out every day']
+days_indoors_index = st.slider('Days Indoors', 0, len(days_indoors_options) - 1, 0)  # เลือก index
+days_indoors = days_indoors_options[days_indoors_index]  # แปลงค่า index เป็นค่าจริง
 
-# สร้าง DataFrame จากข้อมูลที่ผู้ใช้กรอก
+# สร้าง DataFrame จากข้อมูลที่กรอก
 user_input = pd.DataFrame({
     'Occupation': [occupation],
     'treatment': [treatment],
@@ -120,13 +122,11 @@ user_input = pd.DataFrame({
     'Mental_Health_History': [mental_health_history],
     'Social_Weakness': [social_weakness],
     'Gender': [gender],
-    'Days_Indoors': [days_indoors] # ใช้ค่า string ที่ถูกต้อง
+    'Days_Indoors': [days_indoors]
 })
 
-# ทำนายผล
+# ทำนายผลจากโมเดล
 prediction = model.predict(user_input)
 
 # แสดงผลลัพธ์
 st.write(f'Prediction: {prediction[0]}')
-
-!streamlit run catboost.py
